@@ -12,6 +12,18 @@ module.exports = grammar({
 
   rules: {
     // TODO: add the actual grammar rules
-    source_file: $ => "hello"
+    source_file: $ => repeat($.definition),
+
+    definition: $ => choice(
+      $.comment
+      //$.text
+      //$.passage,
+      //$.text
+      // TODO: other kinds of definitions
+    ),
+    comment: $ => prec(2, seq(
+      "<", "!", "-", "-", $.text, "-", "-", ">"
+    )),
+    text: $ => /[a-zA-Z0-9 ]+/
   }
 });

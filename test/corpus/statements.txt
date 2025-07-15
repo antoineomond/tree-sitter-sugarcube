@@ -1,0 +1,52 @@
+============================================
+comments
+============================================
+
+<!-- comment --> inline text <!-- inline comment -->
+newline text
+<!-- newline comment -->
+--------------------------------------------
+
+(source_file
+	(comment)
+	(item 
+		(text))
+	(comment)
+	(item 
+		(text))
+	(comment))
+
+============================================
+text
+============================================
+validtext: 123456789
+--------------------------------------------
+(source_file
+	(item
+		(text)))
+
+============================================
+naked variables
+============================================
+$variable
+$variable.property
+$variable.property.subproperty
+This $inlinevariable.property item
+--------------------------------------------
+(source_file
+	(item
+		(naked_variable))
+	(item
+		(naked_variable
+			(property)))
+	(item
+		(naked_variable
+			(property)
+			(property)))
+	(item
+		(text))
+	(item
+		(naked_variable
+			(property)))
+	(item
+		(text)))

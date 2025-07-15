@@ -2,11 +2,20 @@
   {
     "type": "comment",
     "named": true,
+    "fields": {}
+  },
+  {
+    "type": "item",
+    "named": true,
     "fields": {},
     "children": {
       "multiple": false,
       "required": true,
       "types": [
+        {
+          "type": "naked_variable",
+          "named": true
+        },
         {
           "type": "text",
           "named": true
@@ -15,19 +24,24 @@
     }
   },
   {
-    "type": "definition",
+    "type": "naked_variable",
     "named": true,
     "fields": {},
     "children": {
-      "multiple": false,
-      "required": true,
+      "multiple": true,
+      "required": false,
       "types": [
         {
-          "type": "comment",
+          "type": "property",
           "named": true
         }
       ]
     }
+  },
+  {
+    "type": "property",
+    "named": true,
+    "fields": {}
   },
   {
     "type": "source_file",
@@ -39,27 +53,28 @@
       "required": false,
       "types": [
         {
-          "type": "definition",
+          "type": "item",
           "named": true
         }
       ]
     }
   },
   {
-    "type": "!",
+    "type": "$",
     "named": false
   },
   {
-    "type": "-",
+    "type": "-->",
     "named": false
   },
   {
-    "type": "<",
+    "type": "<!--",
     "named": false
   },
   {
-    "type": ">",
-    "named": false
+    "type": "line_continuation",
+    "named": true,
+    "extra": true
   },
   {
     "type": "text",

@@ -6,68 +6,165 @@
       "type": "REPEAT",
       "content": {
         "type": "SYMBOL",
-        "name": "definition"
+        "name": "item"
       }
     },
-    "definition": {
+    "item": {
       "type": "CHOICE",
       "members": [
         {
           "type": "SYMBOL",
-          "name": "comment"
+          "name": "naked_variable"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "text"
         }
       ]
     },
     "comment": {
-      "type": "PREC",
-      "value": 2,
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "<!--"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "PATTERN",
+                "value": "[^-]"
+              },
+              {
+                "type": "PATTERN",
+                "value": "-[^-]"
+              },
+              {
+                "type": "PATTERN",
+                "value": "--[^>]"
+              }
+            ]
+          }
+        },
+        {
+          "type": "STRING",
+          "value": "-->"
+        }
+      ]
+    },
+    "line_continuation": {
+      "type": "TOKEN",
       "content": {
         "type": "SEQ",
         "members": [
           {
             "type": "STRING",
-            "value": "<"
+            "value": "\\"
           },
           {
-            "type": "STRING",
-            "value": "!"
-          },
-          {
-            "type": "STRING",
-            "value": "-"
-          },
-          {
-            "type": "STRING",
-            "value": "-"
-          },
-          {
-            "type": "SYMBOL",
-            "name": "text"
-          },
-          {
-            "type": "STRING",
-            "value": "-"
-          },
-          {
-            "type": "STRING",
-            "value": "-"
-          },
-          {
-            "type": "STRING",
-            "value": ">"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SEQ",
+                "members": [
+                  {
+                    "type": "CHOICE",
+                    "members": [
+                      {
+                        "type": "STRING",
+                        "value": "\r"
+                      },
+                      {
+                        "type": "BLANK"
+                      }
+                    ]
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "\n"
+                  }
+                ]
+              },
+              {
+                "type": "STRING",
+                "value": "\u0000"
+              }
+            ]
           }
         ]
       }
     },
     "text": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PREC",
+        "value": -1,
+        "content": {
+          "type": "PATTERN",
+          "value": "[^$][a-zA-Z0-9 :.]*"
+        }
+      }
+    },
+    "identifier": {
       "type": "PATTERN",
-      "value": "[a-zA-Z0-9 ]+"
+      "value": "[a-z][a-zA-Z0-9]*"
+    },
+    "naked_variable": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "$"
+        },
+        {
+          "type": "PATTERN",
+          "value": "[a-z][a-zA-Z0-9]*"
+        },
+        {
+          "type": "REPEAT",
+          "content": {
+            "type": "SYMBOL",
+            "name": "property"
+          }
+        }
+      ]
+    },
+    "property": {
+      "type": "PREC",
+      "value": 3,
+      "content": {
+        "type": "TOKEN",
+        "content": {
+          "type": "SEQ",
+          "members": [
+            {
+              "type": "STRING",
+              "value": "."
+            },
+            {
+              "type": "PATTERN",
+              "value": "[a-z][a-zA-Z0-9]*"
+            }
+          ]
+        }
+      }
     }
   },
   "extras": [
     {
+      "type": "SYMBOL",
+      "name": "comment"
+    },
+    {
       "type": "PATTERN",
-      "value": "\\s"
+      "value": "[\\s\\f\\uFEFF\\u2060\\u200B]|\\r?\\n"
+    },
+    {
+      "type": "SYMBOL",
+      "name": "line_continuation"
     }
   ],
   "conflicts": [],

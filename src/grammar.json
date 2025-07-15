@@ -104,7 +104,7 @@
         "value": -1,
         "content": {
           "type": "PATTERN",
-          "value": "[^$][a-zA-Z0-9 :.]*"
+          "value": "[^$][a-zA-Z0-9\\]\\[ :.]*"
         }
       }
     },
@@ -126,31 +126,112 @@
         {
           "type": "REPEAT",
           "content": {
-            "type": "SYMBOL",
-            "name": "property"
+            "type": "CHOICE",
+            "members": [
+              {
+                "type": "SYMBOL",
+                "name": "dotProperty"
+              },
+              {
+                "type": "SYMBOL",
+                "name": "squareProperty"
+              }
+            ]
           }
         }
       ]
     },
-    "property": {
-      "type": "PREC",
-      "value": 3,
-      "content": {
-        "type": "TOKEN",
-        "content": {
-          "type": "SEQ",
+    "dotProperty": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "."
+        },
+        {
+          "type": "PATTERN",
+          "value": "[a-z][a-zA-Z0-9]*"
+        }
+      ]
+    },
+    "squareProperty": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "["
+        },
+        {
+          "type": "CHOICE",
           "members": [
             {
-              "type": "STRING",
-              "value": "."
+              "type": "SYMBOL",
+              "name": "number"
             },
             {
-              "type": "PATTERN",
-              "value": "[a-z][a-zA-Z0-9]*"
+              "type": "SYMBOL",
+              "name": "string"
+            },
+            {
+              "type": "SYMBOL",
+              "name": "naked_variable"
             }
           ]
+        },
+        {
+          "type": "STRING",
+          "value": "]"
         }
-      }
+      ]
+    },
+    "number": {
+      "type": "PATTERN",
+      "value": "\\d+"
+    },
+    "string": {
+      "type": "CHOICE",
+      "members": [
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "\""
+              },
+              {
+                "type": "PATTERN",
+                "value": "[^$][a-zA-Z0-9\\]\\[ :.]*"
+              },
+              {
+                "type": "STRING",
+                "value": "\""
+              }
+            ]
+          }
+        },
+        {
+          "type": "TOKEN",
+          "content": {
+            "type": "SEQ",
+            "members": [
+              {
+                "type": "STRING",
+                "value": "'"
+              },
+              {
+                "type": "PATTERN",
+                "value": "[^$][a-zA-Z0-9\\]\\[ :.]*"
+              },
+              {
+                "type": "STRING",
+                "value": "'"
+              }
+            ]
+          }
+        }
+      ]
     }
   },
   "extras": [

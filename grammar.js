@@ -16,21 +16,10 @@ module.exports = grammar({
     /[\s\f\uFEFF\u2060\u200B]|\r?\n/,
     $.line_continuation,
   ],
-  //precedences: $ => [
-  //  [$.text, $.naked_variable, $.naked_variable_property]
-  //],
-  //conflicts: $ => [
-  //  [$.text, $.naked_variable, $.naked_variable_property]
-  //],
   rules: {
-    // TODO: add the actual grammar rules
     source_file: $ => repeat($.item),
-
     item: $ => choice(
       $.naked_variable,
-      //prec(2, $.naked_variable_property),
-      //prec(-1, $.text),
-      //$.naked_variable_property,
       $.text,
     ),
     comment: $ => seq(
@@ -42,36 +31,37 @@ module.exports = grammar({
       )), '-->'
     ),
     line_continuation: $ => token(seq('\\', choice(seq(optional('\r'), '\n'), '\0'))),
-    text: $ => token(prec(-1, /[^$][a-zA-Z0-9 :.]*/)),
+    text: $ => token(prec(-1, /[^$][a-zA-Z0-9\]\[ :.]*/)),
     identifier: $ => /[a-z][a-zA-Z0-9]*/,
+
+    // https://www.motoslave.net/sugarcube/2/docs/#markup-naked-variable
     naked_variable: $ => {
       const identifier = /[a-z][a-zA-Z0-9]*/
       return seq(
         '$',
         identifier,
-        repeat($.property),
+        repeat(choice($.dotProperty, $.squareProperty)),
       )
     },
-    //naked_variable_property: $ => {
-    //  const identifier = /[a-z][a-zA-Z0-9]*/
-    //  return seq(
-    //    '$',
-    //    identifier,
-    //    repeat($.property),
-    //  )
-    //  //return token(seq(
-    //  //  '$',
-    //  //  identifier,
-    //  //  repeat(seq('.',
-    //  //  identifier)),
-    //  //))
-    //},
-    property: $ => {
+    dotProperty: $ => {
       const identifier = /[a-z][a-zA-Z0-9]*/
-      return prec(3,token(seq(
+      return seq(
         '.',
         identifier,
-      )))
+      )
+    },
+    squareProperty: $ => seq(
+      '[',
+      choice($.number, $.string, $.naked_variable),
+      ']'
+    ),
+    number: $ => /\d+/,
+    string: $ => {
+      const text = /[^$][a-zA-Z0-9\]\[ :.]*/
+      return choice(
+        token(seq('"', text, '"')),
+        token(seq('\'', text, '\'')),
+      )
     }
   }
 });

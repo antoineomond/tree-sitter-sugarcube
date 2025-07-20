@@ -16,6 +16,9 @@ module.exports = grammar({
     /[\s\f\uFEFF\u2060\u200B]|\r?\n/,
     $.line_continuation,
   ],
+  conflicts: $ => [
+    [$.expression, $.literal]
+  ],
   rules: {
     source_file: $ => repeat($.item),
     item: $ => choice(
@@ -52,7 +55,7 @@ module.exports = grammar({
     },
     squareProperty: $ => seq(
       '[',
-      choice($.number, $.string, $.naked_variable),
+      $.expression,
       ']'
     ),
     number: $ => /\d+/,
@@ -62,7 +65,18 @@ module.exports = grammar({
         token(seq('"', text, '"')),
         token(seq('\'', text, '\'')),
       )
-    }
+    },
+
+    // https://www.motoslave.net/sugarcube/2/docs/#twinescript-expressions
+    expression: $ => choice(
+      prec.left(seq($.expression, '+', $.expression)),
+      prec.left(seq($.expression, '-', $.expression)),
+      prec(5, prec.left(seq($.expression, '*', $.expression))),
+      prec(5, prec.left(seq($.expression, '/', $.expression))),
+      $.naked_variable,
+      $.literal,
+    ),
+    literal: $ => choice($.number, $.string, $.naked_variable)
   }
 });
 

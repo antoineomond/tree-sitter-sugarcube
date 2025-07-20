@@ -49,10 +49,10 @@ $inlinevariable['property'][50][$indexOrPropertyVariable]
 This is mixed $inlinevariable['property'].property[50][$property] items
 --------------------------------------------
 (source_file
-	(item (naked_variable (squareProperty (number))))
-	(item (naked_variable (squareProperty (string))))
-	(item (naked_variable (squareProperty (string))))
-	(item (naked_variable (squareProperty (naked_variable))))
-	(item (naked_variable (squareProperty (string)) (squareProperty (number)) (squareProperty (naked_variable))))
-	(item (text)) (item (naked_variable (squareProperty (string)) (dotProperty) (squareProperty (number)) (squareProperty (naked_variable)))) (item (text))
+	(item (naked_variable (squareProperty (expression (literal (number))))))
+	(item (naked_variable (squareProperty (expression (literal (string))))))
+	(item (naked_variable (squareProperty (expression (literal (string))))))
+	(item (naked_variable (squareProperty (expression (naked_variable)))))
+	(item (naked_variable (squareProperty (expression (literal (string)))) (squareProperty (expression (literal (number)))) (squareProperty (expression (naked_variable)))))
+	(item (text)) (item (naked_variable (squareProperty (expression (literal (string)))) (dotProperty) (squareProperty (expression (literal (number)))) (squareProperty (expression (naked_variable))))) (item (text))
 )

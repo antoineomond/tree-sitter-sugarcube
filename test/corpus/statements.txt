@@ -9,40 +9,43 @@ newline text
 
 (source_file
 	(comment)
-	(item (text))
+	(item (word)) (item (word))
 	(comment)
-	(item (text))
+	(item (word)) (item (word))
 	(comment))
 
 ============================================
 text
 ============================================
-validtext: 123456789.
+validtext: 123456789 &é(-è_çà)=;:!ù*$^<>.
 --------------------------------------------
 (source_file
-	(item (text)))
+	(item (word))
+	(item (expression (literal (number))))
+	(item (word))
+)
 
 ============================================
 naked variables dot property
 ============================================
 $variable
 $variable.property
-$variable.property.subproperty
+$variable.property . subproperty
 This is $inlinevariable.dotProperty item
 --------------------------------------------
 (source_file
 	(item (naked_variable))
 	(item (naked_variable (dotProperty)))
 	(item (naked_variable (dotProperty) (dotProperty)))
-	(item (text))
+	(item (word)) (item (word))
 	(item (naked_variable (dotProperty)))
-	(item (text))
+	(item (word))
 )
 ============================================
 naked variable square property
 ============================================
 $inlinevariable[100]
-$inlinevariable["property"]
+$inlinevariable["property string"]
 $inlinevariable['property']
 $inlinevariable[$indexOrPropertyVariable]
 $inlinevariable['property'][50][$indexOrPropertyVariable]
@@ -54,7 +57,7 @@ This is mixed $inlinevariable['property'].property[50][$property] items
 	(item (naked_variable (squareProperty (expression (literal (string))))))
 	(item (naked_variable (squareProperty (expression (naked_variable)))))
 	(item (naked_variable (squareProperty (expression (literal (string)))) (squareProperty (expression (literal (number)))) (squareProperty (expression (naked_variable)))))
-	(item (text)) (item (naked_variable (squareProperty (expression (literal (string)))) (dotProperty) (squareProperty (expression (literal (number)))) (squareProperty (expression (naked_variable))))) (item (text))
+	(item (word)) (item (word)) (item (word)) (item (naked_variable (squareProperty (expression (literal (string)))) (dotProperty) (squareProperty (expression (literal (number)))) (squareProperty (expression (naked_variable))))) (item (word))
 )
 ============================================
 number expressions precedence
@@ -117,4 +120,43 @@ $i["a"+"b"]
 					(expression (literal (string)))
 					(expression (literal (string)))))))
 )
-	
+============================================
+strings
+============================================
+"double quotes"
+'single quotes'
+"special chars 12345 &é(-è_çà)=;:!ù*$^"
+--------------------------------------------
+(source_file
+	(item (expression (literal (string))))
+	(item (expression (literal (string))))
+	(item (expression (literal (string))))
+)
+============================================
+nowiki markup variables
+============================================
+"""$name"""
+<nowiki>$name</nowiki>
+$$name
+{{{$name}}}
+--------------------------------------------
+(source_file
+	(item	(triple_quotes_naked_variable (naked_variable)))
+	(item	(nowiki_naked_variable (naked_variable)))
+	(item	(escaped_naked_variable (naked_variable)))
+	(item	(code_naked_variable (naked_variable)))
+)
+============================================
+link
+============================================
+[[Link]]
+[[Text|Link]]
+[[Link][Setter]]
+[[Text|Link][Setter]]
+--------------------------------------------
+(source_file
+	(item (link (word_link)))
+	(item (link (word_link) (word_link)))
+	(item (link (word_link) (word_link)))
+	(item (link (word_link) (word_link) (word_link)))
+)

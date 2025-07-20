@@ -10,21 +10,45 @@
       }
     },
     "item": {
-      "type": "CHOICE",
-      "members": [
-        {
-          "type": "SYMBOL",
-          "name": "naked_variable"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "expression"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "text"
-        }
-      ]
+      "type": "PREC_LEFT",
+      "value": 0,
+      "content": {
+        "type": "CHOICE",
+        "members": [
+          {
+            "type": "SYMBOL",
+            "name": "escaped_naked_variable"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "naked_variable"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "expression"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "word"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "triple_quotes_naked_variable"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "nowiki_naked_variable"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "code_naked_variable"
+          },
+          {
+            "type": "SYMBOL",
+            "name": "link"
+          }
+        ]
+      }
     },
     "comment": {
       "type": "SEQ",
@@ -101,20 +125,23 @@
         ]
       }
     },
-    "text": {
+    "word": {
       "type": "TOKEN",
       "content": {
         "type": "PREC",
-        "value": -1,
+        "value": -10,
         "content": {
           "type": "PATTERN",
-          "value": "[^$][a-zA-Z0-9\\]\\[ :.]*"
+          "value": "\\S*"
         }
       }
     },
-    "identifier": {
-      "type": "PATTERN",
-      "value": "[a-z][a-zA-Z0-9]*"
+    "word_link": {
+      "type": "TOKEN",
+      "content": {
+        "type": "PATTERN",
+        "value": "[^ \\|\\[\\]]*"
+      }
     },
     "naked_variable": {
       "type": "SEQ",
@@ -125,7 +152,7 @@
         },
         {
           "type": "PATTERN",
-          "value": "[a-z][a-zA-Z0-9]*"
+          "value": "[a-zA-Z][a-zA-Z0-9]*"
         },
         {
           "type": "REPEAT",
@@ -154,7 +181,7 @@
         },
         {
           "type": "PATTERN",
-          "value": "[a-z][a-zA-Z0-9]*"
+          "value": "[a-zA-Z][a-zA-Z0-9]*"
         }
       ]
     },
@@ -193,7 +220,7 @@
               },
               {
                 "type": "PATTERN",
-                "value": "[^$][a-zA-Z0-9\\]\\[ :.]*"
+                "value": "[^\"']*"
               },
               {
                 "type": "STRING",
@@ -213,7 +240,7 @@
               },
               {
                 "type": "PATTERN",
-                "value": "[^$][a-zA-Z0-9\\]\\[ :.]*"
+                "value": "[^\"']*"
               },
               {
                 "type": "STRING",
@@ -301,6 +328,156 @@
         }
       ]
     },
+    "triple_quotes_naked_variable": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "\"\"\""
+        },
+        {
+          "type": "SYMBOL",
+          "name": "naked_variable"
+        },
+        {
+          "type": "STRING",
+          "value": "\"\"\""
+        }
+      ]
+    },
+    "code_naked_variable": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "{{{"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "naked_variable"
+        },
+        {
+          "type": "STRING",
+          "value": "}}}"
+        }
+      ]
+    },
+    "nowiki_naked_variable": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "<nowiki>"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "naked_variable"
+        },
+        {
+          "type": "STRING",
+          "value": "</nowiki>"
+        }
+      ]
+    },
+    "escaped_naked_variable": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "$"
+        },
+        {
+          "type": "SYMBOL",
+          "name": "naked_variable"
+        }
+      ]
+    },
+    "link": {
+      "type": "SEQ",
+      "members": [
+        {
+          "type": "STRING",
+          "value": "[["
+        },
+        {
+          "type": "CHOICE",
+          "members": [
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "word_link"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "word_link"
+                },
+                {
+                  "type": "STRING",
+                  "value": "|"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "word_link"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "word_link"
+                },
+                {
+                  "type": "STRING",
+                  "value": "]["
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "word_link"
+                }
+              ]
+            },
+            {
+              "type": "SEQ",
+              "members": [
+                {
+                  "type": "SYMBOL",
+                  "name": "word_link"
+                },
+                {
+                  "type": "STRING",
+                  "value": "|"
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "word_link"
+                },
+                {
+                  "type": "STRING",
+                  "value": "]["
+                },
+                {
+                  "type": "SYMBOL",
+                  "name": "word_link"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "type": "STRING",
+          "value": "]]"
+        }
+      ]
+    },
     "literal": {
       "type": "CHOICE",
       "members": [
@@ -342,6 +519,10 @@
     [
       "item",
       "expression"
+    ],
+    [
+      "naked_variable",
+      "word"
     ]
   ],
   "precedences": [],

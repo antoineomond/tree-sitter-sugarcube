@@ -6,9 +6,6 @@
 
 /// <reference types="tree-sitter-cli/dsl" />
 // @ts-check
-// <!- not a comment -->
-// <!-- not a comment -> <!-- inline comment -->
-
 module.exports = grammar({
   name: "sugarcube",
   extras: $ => [
@@ -20,14 +17,20 @@ module.exports = grammar({
     [$.expression, $.literal],
     [$.item, $.expression, $.literal],
     [$.item, $.expression],
+    [$.naked_variable, $.word],
   ],
   rules: {
     source_file: $ => repeat($.item),
-    item: $ => choice(
+    item: $ => prec.left(choice(
+      $.escaped_naked_variable,
       $.naked_variable,
       $.expression,
-      $.text,
-    ),
+      $.word,
+      $.triple_quotes_naked_variable,
+      $.nowiki_naked_variable,
+      $.code_naked_variable,
+      $.link
+    )),
     comment: $ => seq(
       '<!--', 
       repeat(choice(
@@ -37,12 +40,12 @@ module.exports = grammar({
       )), '-->'
     ),
     line_continuation: $ => token(seq('\\', choice(seq(optional('\r'), '\n'), '\0'))),
-    text: $ => token(prec(-1, /[^$][a-zA-Z0-9\]\[ :.]*/)),
-    identifier: $ => /[a-z][a-zA-Z0-9]*/,
+    word: $ => token(prec(-10, /\S*/)),
+    word_link: $ => token(/[^ \|\[\]]*/),
 
     // https://www.motoslave.net/sugarcube/2/docs/#markup-naked-variable
     naked_variable: $ => {
-      const identifier = /[a-z][a-zA-Z0-9]*/
+      const identifier = /[a-zA-Z][a-zA-Z0-9]*/
       return seq(
         '$',
         identifier,
@@ -50,7 +53,7 @@ module.exports = grammar({
       )
     },
     dotProperty: $ => {
-      const identifier = /[a-z][a-zA-Z0-9]*/
+      const identifier = /[a-zA-Z][a-zA-Z0-9]*/
       return seq(
         '.',
         identifier,
@@ -63,10 +66,10 @@ module.exports = grammar({
     ),
     number: $ => /\d+/,
     string: $ => {
-      const text = /[^$][a-zA-Z0-9\]\[ :.]*/
+      const word = /[^"']*/
       return choice(
-        token(seq('"', text, '"')),
-        token(seq('\'', text, '\'')),
+        token(seq('"', word, '"')),
+        token(seq('\'', word, '\'')),
       )
     },
 
@@ -76,6 +79,28 @@ module.exports = grammar({
       prec(5, prec.left(seq($.expression, choice('*','/'), $.expression))),
       $.naked_variable,
       $.literal,
+    ),
+    triple_quotes_naked_variable: $ => seq(
+      '"""', $.naked_variable, '"""'
+    ),
+    code_naked_variable: $ => seq(
+      '{{{', $.naked_variable, '}}}'
+    ),
+    nowiki_naked_variable: $ => seq(
+      '<nowiki>', $.naked_variable, '</nowiki>'
+    ),
+    escaped_naked_variable: $ => seq(
+      '$', $.naked_variable
+    ),
+    link: $ => seq(
+      '[[',
+        choice(
+          seq($.word_link),
+          seq($.word_link, '|', $.word_link),
+          seq($.word_link, '][', $.word_link),
+          seq($.word_link, '|', $.word_link, '][', $.word_link),
+      ),
+      ']]'
     ),
     literal: $ => choice($.number, $.string)
   }

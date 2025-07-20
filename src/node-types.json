@@ -42,6 +42,10 @@
       "required": true,
       "types": [
         {
+          "type": "expression",
+          "named": true
+        },
+        {
           "type": "naked_variable",
           "named": true
         },
@@ -60,10 +64,6 @@
       "multiple": false,
       "required": true,
       "types": [
-        {
-          "type": "naked_variable",
-          "named": true
-        },
         {
           "type": "number",
           "named": true

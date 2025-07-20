@@ -18,6 +18,10 @@
         },
         {
           "type": "SYMBOL",
+          "name": "expression"
+        },
+        {
+          "type": "SYMBOL",
           "name": "text"
         }
       ]
@@ -234,29 +238,17 @@
                 "name": "expression"
               },
               {
-                "type": "STRING",
-                "value": "+"
-              },
-              {
-                "type": "SYMBOL",
-                "name": "expression"
-              }
-            ]
-          }
-        },
-        {
-          "type": "PREC_LEFT",
-          "value": 0,
-          "content": {
-            "type": "SEQ",
-            "members": [
-              {
-                "type": "SYMBOL",
-                "name": "expression"
-              },
-              {
-                "type": "STRING",
-                "value": "-"
+                "type": "CHOICE",
+                "members": [
+                  {
+                    "type": "STRING",
+                    "value": "+"
+                  },
+                  {
+                    "type": "STRING",
+                    "value": "-"
+                  }
+                ]
               },
               {
                 "type": "SYMBOL",
@@ -279,33 +271,17 @@
                   "name": "expression"
                 },
                 {
-                  "type": "STRING",
-                  "value": "*"
-                },
-                {
-                  "type": "SYMBOL",
-                  "name": "expression"
-                }
-              ]
-            }
-          }
-        },
-        {
-          "type": "PREC",
-          "value": 5,
-          "content": {
-            "type": "PREC_LEFT",
-            "value": 0,
-            "content": {
-              "type": "SEQ",
-              "members": [
-                {
-                  "type": "SYMBOL",
-                  "name": "expression"
-                },
-                {
-                  "type": "STRING",
-                  "value": "/"
+                  "type": "CHOICE",
+                  "members": [
+                    {
+                      "type": "STRING",
+                      "value": "*"
+                    },
+                    {
+                      "type": "STRING",
+                      "value": "/"
+                    }
+                  ]
                 },
                 {
                   "type": "SYMBOL",
@@ -335,10 +311,6 @@
         {
           "type": "SYMBOL",
           "name": "string"
-        },
-        {
-          "type": "SYMBOL",
-          "name": "naked_variable"
         }
       ]
     }
@@ -361,6 +333,15 @@
     [
       "expression",
       "literal"
+    ],
+    [
+      "item",
+      "expression",
+      "literal"
+    ],
+    [
+      "item",
+      "expression"
     ]
   ],
   "precedences": [],

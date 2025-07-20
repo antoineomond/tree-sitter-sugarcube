@@ -17,12 +17,15 @@ module.exports = grammar({
     $.line_continuation,
   ],
   conflicts: $ => [
-    [$.expression, $.literal]
+    [$.expression, $.literal],
+    [$.item, $.expression, $.literal],
+    [$.item, $.expression],
   ],
   rules: {
     source_file: $ => repeat($.item),
     item: $ => choice(
       $.naked_variable,
+      $.expression,
       $.text,
     ),
     comment: $ => seq(
@@ -69,14 +72,12 @@ module.exports = grammar({
 
     // https://www.motoslave.net/sugarcube/2/docs/#twinescript-expressions
     expression: $ => choice(
-      prec.left(seq($.expression, '+', $.expression)),
-      prec.left(seq($.expression, '-', $.expression)),
-      prec(5, prec.left(seq($.expression, '*', $.expression))),
-      prec(5, prec.left(seq($.expression, '/', $.expression))),
+      prec.left(seq($.expression, choice('+','-'), $.expression)),
+      prec(5, prec.left(seq($.expression, choice('*','/'), $.expression))),
       $.naked_variable,
       $.literal,
     ),
-    literal: $ => choice($.number, $.string, $.naked_variable)
+    literal: $ => choice($.number, $.string)
   }
 });
 
